@@ -1,0 +1,6 @@
+com\test\HandlePages.class
+com\test\DatabaseManager.class
+com\test\Error.class
+com\test\RequestHandler.class
+com\test\WebCrawler.class
+com\test\WebServer.class
