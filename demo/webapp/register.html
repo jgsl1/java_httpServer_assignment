@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color:rgb(1, 81, 167);
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+
+        /* Loading 页面样式 */
+        .loading-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* 半透明黑色背景 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden; /* 默认隐藏 */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .loading-page.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #fff;
+            border-top: 5px solid #007BFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>注册</h1>
+
+    <!-- 注册表单 -->
+    <div id="registerForm">
+        <div class="form-group">
+            <label for="registerUsername">用户名</label>
+            <input type="text" id="registerUsername" placeholder="用户名">
+        </div>
+        <div class="form-group">
+            <label for="registerPassword">密码</label>
+            <input type="password" id="registerPassword" placeholder="密码">
+        </div>
+        <div class="form-group">
+            <button onclick="register()">注册</button>
+        </div>
+        <div id="registerError" class="error"></div>
+        <div id="registerSuccess" class="success"></div>
+    </div>
+</div>
+
+<!-- Loading 页面 -->
+<div class="loading-page" id="loadingPage">
+    <div class="loading-spinner"></div>
+</div>
+
+<script>
+    async function register() {
+        const username = document.getElementById('registerUsername').value;
+        const password = document.getElementById('registerPassword').value;
+        const errorDiv = document.getElementById('registerError');
+        const successDiv = document.getElementById('registerSuccess');
+        const loadingPage = document.getElementById('loadingPage');
+
+        // 清空错误和成功信息
+        errorDiv.innerText = '';
+        successDiv.innerText = '';
+
+        // 检查输入
+        if (!username || !password) {
+            errorDiv.innerText = '请输入用户名和密码。';
+            return;
+        }
+
+        // 显示 Loading 页面
+        loadingPage.classList.add('active');
+
+        try {
+            // 模拟注册请求（2秒延迟）
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password)
+            });
+
+            if (!response.ok) {
+                throw new Error('注册失败');
+            }
+
+            const data = await response.text();
+            if (data === 'Registration successful') {
+                successDiv.innerText = '注册成功！';
+                errorDiv.innerText = '';
+                // 注册成功后重定向回登录页面
+                window.location.href = '/log.html';
+            } else {
+                errorDiv.innerText = '注册失败，用户名可能已存在。';
+            }
+        } catch (error) {
+            errorDiv.innerText = '注册失败: ' + error.message;
+        } finally {
+            // 隐藏 Loading 页面
+            loadingPage.classList.remove('active');
+        }
+    }
+</script>
+
+</body>
+</html>
