@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小型搜索引擎</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color:rgb(1, 81, 167);
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 14px;
+            color: #333;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>小型搜索引擎</h1>
+    <p>输入一个URL，点击按钮将URL发送到Web服务器。</p>
+    <input type="text" id="urlInput" placeholder="输入URL...">
+    <div class="button-group">
+        <button onclick="sendURLToServer()">服务器接收状态</button>
+        <button onclick="redirectToHTML()">转到HTML页面</button>
+        <button onclick="downloadHTML()">下载HTML文件</button>
+    </div>
+    <div id="result"></div>
+</div>
+
+<script>
+    async function sendURLToServer() {
+        const url = document.getElementById('urlInput').value;
+        const resultDiv = document.getElementById('result');
+
+        if (!url) {
+            resultDiv.innerText = '请输入一个有效的URL。';
+            return;
+        }
+
+        try {
+            const response = await fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'url=' + encodeURIComponent(url)
+            });
+
+            if (!response.ok) {
+                throw new Error('服务器响应失败');
+            }
+
+            const data = await response.text();
+            resultDiv.innerText = '服务器响应: ' + data;
+        } catch (error) {
+            resultDiv.innerText = '发送URL失败: ' + error.message;
+        }
+    }
+
+    function redirectToHTML() {
+        const url = document.getElementById('urlInput').value;
+        if (url) {
+            window.location.href = '/redirect?url=' + encodeURIComponent(url);
+        } else {
+            alert('请输入一个有效的URL。');
+        }
+    }
+
+    function downloadHTML() {
+        const url = document.getElementById('urlInput').value;
+        if (url) {
+            window.location.href = '/download?url=' + encodeURIComponent(url);
+        } else {
+            alert('请输入一个有效的URL。');
+        }
+    }
+</script>
+
+</body>
+</html>
